@@ -8,7 +8,6 @@ package com.sheepgame;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -41,7 +40,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(final SheepStorm game) {
         this.game = game;
-		hexmap = new Hexmap();
+
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("Fishie2.JPG"));
         bucketImage = new Texture(Gdx.files.internal("butterflyklein.JPG"));
@@ -69,10 +68,10 @@ public class GameScreen implements Screen {
     }
 
     private void spawnTile() {
-        Polygon tile = new Polygon();
-        tile.setPosition(MathUtils.random(0, 800 - 64), 480);
-        tile.setScale(64, 64);
-        tiles.add(tile);
+        Polygon hextile = new Polygon();
+        hextile.setPosition(MathUtils.random(0, 800 - 64), 480);
+        hextile.setScale(64, 64);
+        tiles.add(hextile);
         lastDropTime = TimeUtils.nanoTime();
     }
 
@@ -91,8 +90,9 @@ public class GameScreen implements Screen {
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
         game.batch.setProjectionMatrix(camera.combined);
-        hexmap.renderer.setView(camera);
-        hexmap.renderer.render();
+        SheepStorm ssGame = (SheepStorm)this.game;
+        ssGame.gamelogic.hexmap.renderer.setView(camera);
+        ssGame.gamelogic.hexmap.renderer.render();
 /*        // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
@@ -109,12 +109,6 @@ public class GameScreen implements Screen {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
             tile.setPosition(touchPos.x - 64 / 2, tile.getY());
-        }
-        if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-            tile.setPosition((tile.getX() - 200) * Gdx.graphics.getDeltaTime(), tile.getY());
-        }
-        if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            tile.setPosition((tile.getX() + 200) * Gdx.graphics.getDeltaTime(), tile.getY());
         }
 
         // make sure the bucket stays within the screen bounds

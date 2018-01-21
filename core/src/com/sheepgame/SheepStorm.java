@@ -9,13 +9,13 @@ public class SheepStorm extends Game {
 	
 	public PolygonSpriteBatch batch;
 	public BitmapFont font;
-
+        public GameLogic gamelogic; 
                 
 	public void create() {
 		batch = new PolygonSpriteBatch();
 		//Use LibGDX's default Arial font.
 		font = new BitmapFont();
-
+                gamelogic = new GameLogic();
                 this.setScreen(new MainMenuScreen(this));
                 
 	}
@@ -27,5 +27,6 @@ public class SheepStorm extends Game {
 	public void dispose() {
 		batch.dispose();
 		font.dispose();
+                gamelogic.dispose();
 	}
 }
