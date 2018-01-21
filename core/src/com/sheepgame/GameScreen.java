@@ -37,10 +37,11 @@ public class GameScreen implements Screen {
     Array<Polygon> tiles;
     long lastDropTime;
     int dropsGathered;
+            public Hexmap hexmap;
 
     public GameScreen(final SheepStorm game) {
         this.game = game;
-
+		hexmap = new Hexmap();
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("Fishie2.JPG"));
         bucketImage = new Texture(Gdx.files.internal("butterflyklein.JPG"));
@@ -63,25 +64,25 @@ public class GameScreen implements Screen {
 
         // create the raindrops array and spawn the first raindrop
         tiles = new Array<Polygon>();
-		spawnTile();
+        spawnTile();
 
     }
 
-	private void spawnTile() {
-		Polygon tile = new Polygon();
-		tile.setPosition(MathUtils.random(0, 800 - 64), 480);
-		tile.setScale(64, 64);
-		tiles.add(tile);
-		lastDropTime = TimeUtils.nanoTime();
-	}    
-    
+    private void spawnTile() {
+        Polygon tile = new Polygon();
+        tile.setPosition(MathUtils.random(0, 800 - 64), 480);
+        tile.setScale(64, 64);
+        tiles.add(tile);
+        lastDropTime = TimeUtils.nanoTime();
+    }
+
     @Override
     public void render(float delta) {
         // clear the screen with a dark blue color. The
         // arguments to glClearColor are the red, green
         // blue and alpha component in the range [0,1]
         // of the color to be used to clear the screen.
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+        Gdx.gl.glClearColor(0, 0.2f, 0.4f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // tell the camera to update its matrices.
@@ -90,13 +91,17 @@ public class GameScreen implements Screen {
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
         game.batch.setProjectionMatrix(camera.combined);
-
-        // begin a new batch and draw the bucket and
+        hexmap.renderer.setView(camera);
+        hexmap.renderer.render();
+/*        // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
         game.font.draw(game.batch, "Hexagons Collected: " + dropsGathered, 0, 480);
         game.batch.draw(hexagon, 100, 100, 200, 200);
         game.batch.end();
+*/
+
+        
 
         // process user input
         if (Gdx.input.isTouched()) {
@@ -131,7 +136,7 @@ public class GameScreen implements Screen {
         Iterator<Polygon> iter = tiles.iterator();
         while (iter.hasNext()) {
             Polygon tile = iter.next();
-            tile.setPosition(tile.getX(),(tile.getY() - 200) * Gdx.graphics.getDeltaTime());
+            tile.setPosition(tile.getX(), (tile.getY() - 200) * Gdx.graphics.getDeltaTime());
             if (tile.getY() + 64 < 0) {
                 iter.remove();
             }
@@ -144,53 +149,37 @@ public class GameScreen implements Screen {
         }
     }
 
-        @Override
-        public void resize
-        (int width, int height
-        
-        
-        ) {
+    @Override
+    public void resize(int width, int height) {
     }
 
     @Override
-        public void show
-        
-            () {
+    public void show() {
         // start the playback of the background music
         // when the screen is shown
         meadowMusic.play();
-        }
-
-        @Override
-        public void hide
-        
-        
-        () {
     }
 
     @Override
-        public void pause
-        
-        
-        () {
+    public void hide() {
+        meadowMusic.pause();
     }
 
     @Override
-        public void resume
-        
-        
-        () {
+    public void pause() {
     }
 
     @Override
-        public void dispose
-        
-            () {
+    public void resume() {
+    }
+
+    @Override
+    public void dispose() {
         dropImage.dispose();
-            bucketImage.dispose();
-            dropSound.dispose();
-            meadowMusic.dispose();
-            stampede.dispose();
-        }
-
+        bucketImage.dispose();
+        dropSound.dispose();
+        meadowMusic.dispose();
+        stampede.dispose();
     }
+
+}

@@ -9,13 +9,13 @@ public class SheepStorm extends Game {
 	
 	public PolygonSpriteBatch batch;
 	public BitmapFont font;
-        public Hexmap hexmap;
+
                 
 	public void create() {
 		batch = new PolygonSpriteBatch();
 		//Use LibGDX's default Arial font.
 		font = new BitmapFont();
-		hexmap = new Hexmap();
+
                 this.setScreen(new MainMenuScreen(this));
                 
 	}
