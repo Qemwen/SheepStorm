@@ -30,6 +30,7 @@ public class GameScreen implements Screen {
     public static Hexmap hexmap;
     int screenHeight;
     int screenWidth;
+    int tileLength = 56;
 
     public GameScreen(final SheepStorm game) {
         this.game = game;
@@ -63,17 +64,19 @@ public class GameScreen implements Screen {
         SheepStorm ssGame = (SheepStorm) this.game;
         ssGame.gamelogic.hexmap.renderer.setView(camera);
         ssGame.gamelogic.hexmap.renderer.render();
-
+        SideMenu menu = new SideMenu();
+//        menu.create();
+//        menu.render();
+//        menu.resize(100,100);
         if (Gdx.input.justTouched()) {
             if (ssGame.gamelogic.hexmap.drawPile.size > 0) {
-                System.out.println("Ik sta op " + Gdx.input.getX() + " en " + (screenHeight - Gdx.input.getY()));
                 System.out.println("Ik zet een tile op " + (Gdx.input.getX() / 92) + " en y = " + (Gdx.input.getY() / 97));
-                System.out.println(ssGame.gamelogic.hexmap.drawPile.size);
-                System.out.println((screenHeight - Gdx.input.getY()) / 97);
-                int hoogtePlek = (screenHeight - Gdx.input.getY()) / 97;
-                int breedtePlek = Gdx.input.getX() / 92;
-                
-                ssGame.gamelogic.hexmap.placeTile(breedtePlek, hoogtePlek);
+                int[] thatTile = whichTile(Gdx.input.getX(), Gdx.input.getY());
+
+                if (ssGame.gamelogic.hexmap.checkPlek(thatTile[0], thatTile[1])) {
+                    ssGame.gamelogic.hexmap.placeTile(thatTile[0], thatTile[1]);
+                    ssGame.gamelogic.hexmap.checkPlekken();
+                }
             }
         }
     }
@@ -108,4 +111,43 @@ public class GameScreen implements Screen {
         stampede.dispose();
     }
 
+    //zorgt ervoor dat de goede tegel bedoeld wordt
+    public int[] whichTile(int x, int y) {
+        int[] thatTile = {0, 0};
+        int breedte = x;
+        int breedtePlek = x / (int) (1.5 * tileLength);
+        double hoogte = screenHeight - y;
+        double tileHeight = (tileLength * 1.7321);
+        boolean evenColumn = false;
+        //is het een even kolom?
+        if (breedtePlek % 2 == 0) {
+            evenColumn = true;
+        }
+        //relatieve hoogte
+        double heightInTile = hoogte % tileHeight;
+        //in een even kolom is de relatieve hoogte anders
+        if (evenColumn) {
+            heightInTile += 0.5 * tileHeight;
+            heightInTile = heightInTile % tileHeight;
+        }
+        //bereken de onderste helft van de hoogte om de afwijking te kunnen bepalen
+        if (heightInTile > .5 * tileHeight) {
+            heightInTile = tileHeight - heightInTile;
+        }
+        double widthInTile = breedte % (1.5 * tileLength);
+        //in het linkerstukje bedoel je soms net een andere
+        if (widthInTile < 0.5 * tileLength) {
+            breedte -= 0.5 * tileLength - ((heightInTile / tileHeight) * tileLength);
+            breedtePlek = (breedte / (int) (1.5 * tileLength));
+        }
+        //een even kolom staat wat hoger, corrigeer dit
+        if (breedtePlek % 2 == 0) {
+            hoogte -= (tileHeight / 2.0);
+        }
+        double hoogtePlek = hoogte / tileHeight;
+        thatTile[0] = breedtePlek;
+        thatTile[1] = (int) hoogtePlek;
+
+        return thatTile;
+    }
 }

@@ -4,7 +4,14 @@
   <auxiliary>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-      <group/>
+      <group>
+        <file>file:/P:/NetBeans/SheepStorm/core/src/com/sheepgame/SideMenu.java</file>
+        <file>file:/P:/NetBeans/SheepStorm/core/src/com/sheepgame/Hexmap.java</file>
+        <file>file:/P:/NetBeans/SheepStorm/core/src/com/sheepgame/SheepStorm.java</file>
+        <file>file:/P:/NetBeans/SheepStorm/core/src/com/sheepgame/Plek.java</file>
+        <file>file:/P:/NetBeans/SheepStorm/core/src/com/sheepgame/Overzicht</file>
+        <file>file:/P:/NetBeans/SheepStorm/core/src/com/sheepgame/GameScreen.java</file>
+      </group>
     </open-files>
     <editor-bookmarks lastBookmarkId="0" xmlns="http://www.netbeans.org/ns/editor-bookmarks/2"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">

@@ -15,8 +15,6 @@ public class Plek extends TiledMapTileLayer.Cell {
     private String status = "empty"; //Possible: empty, available, tiled, trampled
     int boven;
     int links;
-    int rechts = links - 2 * links;
-    int onder = boven - 2 * boven;
 
     public Plek(int naarLinks, int naarBoven) {
         links = naarLinks;
@@ -54,8 +52,8 @@ public class Plek extends TiledMapTileLayer.Cell {
     public boolean hasNeighbours(TiledMapTileLayer layer) {
         boolean hasThem = false;
         for (int[] possNeighbour : neighbours()) {
-
-            if (possNeighbour[0] >= 0 && possNeighbour[1] >= 0 && possNeighbour[0] < 10 && possNeighbour[1] < 10) {
+            System.out.println("Buren van " + possNeighbour[0] + possNeighbour[1]);
+            if (possNeighbour[0] >= 0 && possNeighbour[1] >= 0 && possNeighbour[0] < 12 && possNeighbour[1] < 10) {
                 Plek neighbourCell = (Plek) layer.getCell(possNeighbour[0], possNeighbour[1]);
                 if (neighbourCell.getStatus().equals("tiled") || neighbourCell.getStatus().equals("trampled")) {
                     //System.out.println("Ik heb een buur gevonden op " + possNeighbour[0] + possNeighbour[1]);
