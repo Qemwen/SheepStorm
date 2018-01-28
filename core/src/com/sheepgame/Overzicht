@@ -1,25 +1,17 @@
 De structuur.
-
-DesktopLauncher (en html enzo launchers) bevatten platformspecifieke code. En initiëren het spel. 
-
-SheepStorm beheert waar in het spel je zit (main menu of gamescreen enzo).
-
-MainMenuScreen maakt een menu vanuit waar ik het spel kan beginnen (en wie weet later nog opties).
-
-Gamescreen is de tekenmagic en de input, maar niet de gamelogic. 
-
-GameLogic is waar de magic happens. 
-
-Hexmap zorgt voor het grid. Hier worden de Tiles gemaakt en bijgehouden of en waar ze geplaatst kunnen worden of zijn.
-
-Tile (mogelijk een soort van Cell) houdt bij hoe het met de tegel (en zn buren) gaat.
-
-Player*** gaat zorgen voor rollen en dat soort dingen.
-
-Storm*** gaat de sheepstorm afhandelen.
-
-Walls*** gaat de muurtjes bijhouden.
-
-Dragon*** houdt bij van de draakjes of ze geplaatst zijn, waar ze zijn en of ze veilig zijn. 
+    - DesktopLauncher (en html enzo launchers) bevatten platformspecifieke code. En initiëren het spel. 
+    - SheepStorm beheert waar in het spel je zit (main menu of gamescreen enzo).
+    - MainMenuScreen maakt een menu vanuit waar ik het spel kan beginnen (en wie weet later nog opties).
+    - Gamescreen is de tekenmagic en de input, maar niet de gamelogic. 
+    - GameLogic is waar de magic happens. 
+    - Hexmap zorgt voor het grid. Hier worden de Tiles gemaakt en bijgehouden of en waar ze geplaatst kunnen worden of zijn.
+    - Tile (mogelijk een soort van Cell) houdt bij hoe het met de tegel (en zn buren) gaat.
+    - Player*** gaat zorgen voor rollen en dat soort dingen.
+    - Storm*** gaat de sheepstorm afhandelen.
+    - Walls*** gaat de muurtjes bijhouden.
+    - Dragon*** houdt bij van de draakjes of ze geplaatst zijn, waar ze zijn en of ze veilig zijn. 
   
-
+De volgende stappen.
+    - Snappen wat viewports zijn en doen
+    - Zorgen dat de gemeten input overeenkomt met waar de tiles komen
+    - communicatie tussen gamescreen en gamelogic (doe een stap in gamelogic, voer gamescreen uit, terug naar gamelogic)

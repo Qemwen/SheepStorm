@@ -18,6 +18,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.utils.Array;
 
 /**
  *
@@ -30,11 +31,16 @@ public class Hexmap {
     Texture hexagon;
     TiledMapTile[] availableTiles;
     public HexagonalTiledMapRenderer renderer;
+    Array drawPile;
+    static TiledMapTileLayer layer;
+    int hoogte = 10;
+    int breedte = 10;
+    StaticTiledMapTile lightblue = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("lightblue.png"))));
 
     public Hexmap() {
         hexture = new Texture(Gdx.files.internal("hexes.png"));
         TextureRegion[][] hexes = TextureRegion.split(hexture, 112, 97);
-
+        //Verklein het plaatje naar de tegel
         Pixmap groteHexagon = new Pixmap(Gdx.files.internal("hexagon.png"));
         Pixmap kleineHexagon = new Pixmap(112, 97, groteHexagon.getFormat());
         kleineHexagon.drawPixmap(groteHexagon,
@@ -48,45 +54,105 @@ public class Hexmap {
         map = new TiledMap();
         MapLayers layers = map.getLayers();
         availableTiles = new TiledMapTile[60];
-        for (int i = 0; i < 20; i++) {
+
+        for (int i = 0; i < availableTiles.length; i++) {
             //Later komen hier de 60 verschillende plaatjes
-            availableTiles[0] = new StaticTiledMapTile(
-                    new TextureRegion(hexagon));
-            availableTiles[1] = new StaticTiledMapTile(
-                    new TextureRegion(hexes[0][1]));
-            availableTiles[2] = new StaticTiledMapTile(
-                    new TextureRegion(hexes[1][0]));
+
+            if (i < 20) {
+                availableTiles[i] = new StaticTiledMapTile(
+                        new TextureRegion(hexes[0][0]));
+            } else if (i < 40) {
+                availableTiles[i] = new StaticTiledMapTile(
+                        new TextureRegion(hexes[0][1]));
+            } else {
+                availableTiles[i] = new StaticTiledMapTile(
+                        new TextureRegion(hexes[1][0]));
+            }
         }
+        //Maak er een geshufflede lijst van
+        drawPile = new Array(availableTiles);
+        drawPile.shuffle();
 
-        TiledMapTileLayer layer = new TiledMapTileLayer(45, 30, 112, 97);
-        //Maak één specifieke tegel aan
-        Cell celly = new Cell();
-        celly.setTile(availableTiles[0]);
-        layer.setCell(4, 4, celly);
+        //Bouw het veld
+        layer = new TiledMapTileLayer(breedte, hoogte, 112, 97);
 
-        Cell cell = new Cell();
-        cell.setTile(availableTiles[1]);
-        layer.setCell(0, 0, cell);
+        //Maak alle cells en tiles
+        for (int l = 0;
+                l < 1; l++) {
+            for (int y = 0; y < breedte; y++) {
+                for (int x = 0; x < hoogte; x++) {
+                    Cell plek = new Plek(x, y);
+                    layer.setCell(x, y, plek);
+                }
+            }
 
-//Vul alle cells met random tiles
-//            for (int y = 0; y < 30; y++) {
-//                for (int x = 0; x < 45; x++) {
-//                    if (y == 4 && x == 4) {
-//                        continue;
-//                    }
-//                    Cell cell = new Cell();
-//                    cell.setTile(availableTiles[1]);
-//                    layer.setCell(x, y, cell);
-//                }
-//            }
-//            
+        }
         layers.add(layer);
 
-        /*        MapObjects alltiles = new MapObjects();
-        float[] vertices = {1.0f, 500.1f, 300.0f, 0.5f, 7.12f, 60.1f};
-        PolygonMapObject sometile = new PolygonMapObject(vertices);
-        //   sometile.setColor(GREEN);
-        //   alltiles.add(sometile); */
+        //Leg de starttegel neer
+        StaticTiledMapTile startTile = new StaticTiledMapTile(new TextureRegion(hexagon));
+        Cell celly = new Plek(4,4);
+        celly.setTile(startTile);
+        layer.setCell(4, 4, celly);
+
+        //Toon de bovenste tegel
+        Cell cell1 = new Plek(0,0);
+        cell1.setTile((StaticTiledMapTile) drawPile.get(0));
+        layer.setCell(0, 0, cell1);
+        placeTile(3, 4);
+        placeTile(2, 4);
+        placeTile(3, 3);
+        placeTile(7, 0);
+        placeTile(4, 6);
+        checkPlekken();
+
+//        Cell cell2 = new Cell();
+//        cell2.setTile((StaticTiledMapTile)drawPile.get(2));
+//        layer.setCell(1, 0, cell2);        
+//
+//        Cell cell3 = new Cell();
+//        cell3.setTile((StaticTiledMapTile)drawPile.get(3));
+//        layer.setCell(2, 0, cell3);        
         renderer = new HexagonalTiledMapRenderer(map);
+    }
+
+    public void placeTile(int x, int y) {
+        //System.out.println("Ik ga checken" + x + y);
+        checkPlek(x, y);
+        //System.out.println("Ik heb gecheckt " + x + y);
+        if (x < breedte && y < hoogte) {
+            Cell cell1 = new Plek(x,y);
+            cell1.setTile((StaticTiledMapTile) drawPile.pop());
+            layer.setCell(x, y, cell1);
+        } else {
+            //System.out.println("Ik kan geen tegel plaatsen");
+        }
+    }
+
+    private void checkPlekken() {
+        for (int i = 0; i < breedte; i++) {
+            for (int j = 0; j < hoogte; j++) {
+                //System.out.println("Ik ga alles checken en ben nu bij: "+ i + j);
+                if (checkPlek(i, j)) {
+                    Plek checkedPlek = (Plek) layer.getCell(i, j);
+                    checkedPlek.setTile(lightblue);
+                    checkedPlek.setStatus("available");
+                }
+
+            }
+        }
+    }
+
+    private boolean checkPlek(int x, int y) {
+        if (layer.getCell(x, y).getTile() == null){
+            Plek tileAim = (Plek) layer.getCell(x, y);
+            //System.out.println("ik geloof dat ik buren heb is "+ tileAim.hasNeighbours(layer));
+            return tileAim.hasNeighbours(layer);
+                
+        } else {
+            //System.out.println("Ik was niet null" + x + y);
+             return false;
+        }
+       
     }
 }

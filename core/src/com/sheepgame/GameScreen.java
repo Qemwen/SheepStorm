@@ -24,55 +24,25 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class GameScreen implements Screen {
 
     final SheepStorm game;
-    Texture hexagon;
-    Texture dropImage;
-    Texture bucketImage;
-    Sound dropSound;
-    //Sound bleating;
     Sound stampede;
     Music meadowMusic;
     OrthographicCamera camera;
-    Polygon tile;
-    Array<Polygon> tiles;
-    long lastDropTime;
-    int dropsGathered;
-            public Hexmap hexmap;
+    public static Hexmap hexmap;
+    int screenHeight;
+    int screenWidth;
 
     public GameScreen(final SheepStorm game) {
         this.game = game;
-
-        // load the images for the droplet and the bucket, 64x64 pixels each
-        dropImage = new Texture(Gdx.files.internal("Fishie2.JPG"));
-        bucketImage = new Texture(Gdx.files.internal("butterflyklein.JPG"));
-        hexagon = new Texture(Gdx.files.internal("hexagon.png"));
-        // load the drop sound effect and the rain background "music"
-        dropSound = Gdx.audio.newSound(Gdx.files.internal("clank.mp3"));
         stampede = Gdx.audio.newSound(Gdx.files.internal("stampede.wav"));
         //bleating = Gdx.audio.newSound(Gdx.files.internal("bleating.wav"));
         meadowMusic = Gdx.audio.newMusic(Gdx.files.internal("meadow.wav"));
         meadowMusic.setLooping(true);
-
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 1200, 800);
+        screenHeight = 800;
+        screenWidth = 1100;
+        camera.setToOrtho(false, screenWidth, screenHeight);
 
-        // create a Rectangle to logically represent the bucket
-        tile = new Polygon();
-        tile.setPosition(100, 100);// plaats de tegel
-        tile.setScale(200, 200); // groott van de tegel
-
-        // create the raindrops array and spawn the first raindrop
-        tiles = new Array<Polygon>();
-        spawnTile();
-
-    }
-
-    private void spawnTile() {
-        Polygon hextile = new Polygon();
-        hextile.setPosition(MathUtils.random(0, 800 - 64), 480);
-        hextile.setScale(64, 64);
-        tiles.add(hextile);
-        lastDropTime = TimeUtils.nanoTime();
     }
 
     @Override
@@ -90,56 +60,21 @@ public class GameScreen implements Screen {
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
         game.batch.setProjectionMatrix(camera.combined);
-        SheepStorm ssGame = (SheepStorm)this.game;
+        SheepStorm ssGame = (SheepStorm) this.game;
         ssGame.gamelogic.hexmap.renderer.setView(camera);
         ssGame.gamelogic.hexmap.renderer.render();
-/*        // begin a new batch and draw the bucket and
-        // all drops
-        game.batch.begin();
-        game.font.draw(game.batch, "Hexagons Collected: " + dropsGathered, 0, 480);
-        game.batch.draw(hexagon, 100, 100, 200, 200);
-        game.batch.end();
-*/
 
-        
-
-        // process user input
-        if (Gdx.input.isTouched()) {
-            Vector3 touchPos = new Vector3();
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPos);
-            tile.setPosition(touchPos.x - 64 / 2, tile.getY());
-        }
-
-        // make sure the bucket stays within the screen bounds
-        float x = (float) 0;
-        if (tile.getX() < 0) {
-            tile.setPosition(0, tile.getY());
-        }
-        if (tile.getX() > 800 - 64) {
-            tile.setPosition(800 - 64, tile.getY());
-        }
-// check if we need to create a new raindrop
-        if (TimeUtils.nanoTime() - lastDropTime > 1000000000) {
-            tile.setPosition(tile.getX(), tile.getY() + 50);
-        }
-
-        // move the raindrops, remove any that are beneath the bottom edge of
-        // the screen or that hit the bucket. In the later case we increase the 
-        // value our drops counter and add a sound effect.
-        Iterator<Polygon> iter = tiles.iterator();
-        while (iter.hasNext()) {
-            Polygon tile = iter.next();
-            tile.setPosition(tile.getX(), (tile.getY() - 200) * Gdx.graphics.getDeltaTime());
-            if (tile.getY() + 64 < 0) {
-                iter.remove();
+        if (Gdx.input.justTouched()) {
+            if (ssGame.gamelogic.hexmap.drawPile.size > 0) {
+                System.out.println("Ik sta op " + Gdx.input.getX() + " en " + (screenHeight - Gdx.input.getY()));
+                System.out.println("Ik zet een tile op " + (Gdx.input.getX() / 92) + " en y = " + (Gdx.input.getY() / 97));
+                System.out.println(ssGame.gamelogic.hexmap.drawPile.size);
+                System.out.println((screenHeight - Gdx.input.getY()) / 97);
+                int hoogtePlek = (screenHeight - Gdx.input.getY()) / 97;
+                int breedtePlek = Gdx.input.getX() / 92;
+                
+                ssGame.gamelogic.hexmap.placeTile(breedtePlek, hoogtePlek);
             }
-            if (tile.getY() < 0) {
-                dropsGathered++;
-                //long play = dropSound.play();
-                iter.remove();
-            }
-
         }
     }
 
@@ -169,9 +104,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        dropImage.dispose();
-        bucketImage.dispose();
-        dropSound.dispose();
         meadowMusic.dispose();
         stampede.dispose();
     }
