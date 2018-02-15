@@ -9,8 +9,6 @@ import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -31,7 +29,7 @@ public class Hexmap {
     Texture hexagon;
     TiledMapTile[] availableTiles;
     public HexagonalTiledMapRenderer renderer;
-    Array drawPile;
+    static Array drawPile;
     static TiledMapTileLayer layer;
     int hoogte = 10;
     int breedte = 12;
@@ -57,7 +55,6 @@ public class Hexmap {
 
         for (int i = 0; i < availableTiles.length; i++) {
             //Later komen hier de 60 verschillende plaatjes
-
             if (i < 20) {
                 availableTiles[i] = new StaticTiledMapTile(
                         new TextureRegion(hexes[0][0]));
@@ -82,7 +79,6 @@ public class Hexmap {
             for (int x = 0; x < breedte; x++) {
                 for (int y = 0; y < hoogte; y++) {
                     Cell plek = new Plek(x, y);
-                    System.out.println("ik maak een cel op " + x + y);
                     layer.setCell(x, y, plek);
                 }
             }
@@ -95,22 +91,7 @@ public class Hexmap {
         Cell celly = new Plek(4, 4);
         celly.setTile(startTile);
         layer.setCell(4, 4, celly);
-
-        //Toon de bovenste tegel
-        placeTile(3, 4);
-        placeTile(2, 4);
-        placeTile(3, 3);
-        placeTile(7, 0);
-        placeTile(4, 6);
         checkPlekken();
-
-//        Cell cell2 = new Cell();
-//        cell2.setTile((StaticTiledMapTile)drawPile.get(2));
-//        layer.setCell(1, 0, cell2);        
-//
-//        Cell cell3 = new Cell();
-//        cell3.setTile((StaticTiledMapTile)drawPile.get(3));
-//        layer.setCell(2, 0, cell3);        
         renderer = new HexagonalTiledMapRenderer(map);
     }
 
@@ -122,9 +103,9 @@ public class Hexmap {
             Cell cell1 = new Plek(x, y);
             cell1.setTile((StaticTiledMapTile) drawPile.pop());
             layer.setCell(x, y, cell1);
-        } else {
-            //System.out.println("Ik kan geen tegel plaatsen");
-        }
+            SideMenu.updateNext();
+            SideMenu.render();
+        } 
     }
 
     public void checkPlekken() {
@@ -136,31 +117,17 @@ public class Hexmap {
                     checkedPlek.setTile(lightblue);
                     checkedPlek.setStatus("available");
                 }
-
             }
-        }
-        if (drawPile.size > 0) {
-            Cell cell1 = new Plek(0, 0);
-            cell1.setTile((StaticTiledMapTile) drawPile.peek());
-            layer.setCell(0, 0, cell1);
-        } else {
-            Plek pilePlek = (Plek) layer.getCell(0, 0);
-            pilePlek.setStatus("empty");
-            layer.setCell(0, 0, null);
-            
         }
     }
 
     public boolean checkPlek(int x, int y) {
         Plek checkedPlek = (Plek) layer.getCell(x, y);
         if (checkedPlek.getStatus() == "available" || checkedPlek.getStatus() == "empty") {
-            //System.out.println("ik geloof dat ik buren heb is "+ tileAim.hasNeighbours(layer));
             return checkedPlek.hasNeighbours(layer);
 
         } else {
-            //System.out.println("Ik was niet null" + x + y);
             return false;
         }
-
     }
 }

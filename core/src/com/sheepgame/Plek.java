@@ -52,7 +52,6 @@ public class Plek extends TiledMapTileLayer.Cell {
     public boolean hasNeighbours(TiledMapTileLayer layer) {
         boolean hasThem = false;
         for (int[] possNeighbour : neighbours()) {
-            System.out.println("Buren van " + possNeighbour[0] + possNeighbour[1]);
             if (possNeighbour[0] >= 0 && possNeighbour[1] >= 0 && possNeighbour[0] < 12 && possNeighbour[1] < 10) {
                 Plek neighbourCell = (Plek) layer.getCell(possNeighbour[0], possNeighbour[1]);
                 if (neighbourCell.getStatus().equals("tiled") || neighbourCell.getStatus().equals("trampled")) {

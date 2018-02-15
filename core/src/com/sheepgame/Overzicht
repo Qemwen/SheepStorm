@@ -13,5 +13,5 @@ De structuur.
   
 De volgende stappen.
     - Snappen wat viewports zijn en doen
-    - Zorgen dat de gemeten input overeenkomt met waar de tiles komen
     - communicatie tussen gamescreen en gamelogic (doe een stap in gamelogic, voer gamescreen uit, terug naar gamelogic)
+    - een menu met een knop aan de zijkant maken
