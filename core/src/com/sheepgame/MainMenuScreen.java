@@ -65,8 +65,7 @@ public class MainMenuScreen implements Screen {
         stage.draw();
         
         if (Gdx.input.isTouched()) {
-            game.gamelogic.init();
-            game.setScreen(new GameScreen(game));
+            game.gamelogic.init(game);
             dispose();
         }
     }

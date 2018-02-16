@@ -35,7 +35,7 @@ public class GameScreen implements Screen {
 
         camera.setToOrtho(false, Constants.GAMEWIDTH, Constants.GAMEHEIGHT);
         GAME.batch.setProjectionMatrix(camera.combined);
-        GAME.gamelogic.hexmap.renderer.setView(camera);
+        GameLogic.hexmap.renderer.setView(camera);
         sideMenu = new SideMenu();
         Gdx.input.setInputProcessor(SideMenu.stage);
         sideMenu.render();

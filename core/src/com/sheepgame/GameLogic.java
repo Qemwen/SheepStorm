@@ -5,6 +5,9 @@
  */
 package com.sheepgame;
 
+import com.badlogic.gdx.Gdx;
+import static com.sheepgame.GameScreen.GAME;
+
 /**
  *
  * @author Carlijn
@@ -13,37 +16,90 @@ public class GameLogic {
 
     // 1. Het spel initieert. Dingen worden klaargelegd
     //Methode initieer?
-    Hexmap hexmap;
-
-    public void init() {
-        // Maak een hexgrid
-        hexmap = new Hexmap();
+    public static Hexmap hexmap = new Hexmap();
+    public static SheepStorm game;
+    boolean gewonnen = false;
+    boolean verloren = false;
+    int sheepPhase;
+    String sheepState;
+    
+    public void init(SheepStorm game) {
+        this.game = game;
+        GameScreen gameScreen = new GameScreen(game);
+        game.setScreen(gameScreen);
+        gameScreen.render(.1f);
+        // Maak een hexgridg
         //Maak spelers (nu nog even 1)
         //Maak schaapstatussen
         //Toon alles dat gemaakt is in gamescreen
         //Klaar
+    
+
+    
+//        2. Player 0 legt 3 tegels aan. 
+//        3. Doorloop een beurt:
+          while(gewonnen == false && verloren == false){
+//            1. Volgende fase schapen
+                if(sheepPhase < 5){
+                    sheepPhase ++;
+
+                    System.out.println("The sheep just got stormier. They are now: " + getSheepState());
+                } else {
+                    sheepPhase = 1;
+                    System.out.println("The sheep are calm again. They are now: " + getSheepState());
+                }
+//            2. Open de bovenste tegel.
+                SideMenu.updateNext();
+//            3. Plaats die tegel.
+                gameScreen.render(1f);
+                 if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .9)) {
+            if (GAME.gamelogic.hexmap.drawPile.size > 0) {
+                int[] thatTile = gameScreen.whichTile(Gdx.input.getX(), Gdx.input.getY());
+
+                if (GAME.gamelogic.hexmap.checkPlek(thatTile[0], thatTile[1])) {
+                    GAME.gamelogic.hexmap.placeTile(thatTile[0], thatTile[1]);
+                    GAME.gamelogic.hexmap.checkPlekken();
+                }
+            }
+        }
+//            3a. Voer mogelijk effect uit.
+//            4. Kies 1 van 3:    1. Verplaats een draak.
+//                                2. Leg een open tegel aan.
+//                                3. Krijg drie nieuwe open tegels.
+//            4a. Kijk of er gewonnen is. (break)
+                if(Hexmap.drawPile.size == 0){
+                    gewonnen = true;
+                    break;
+                }
+//            5. Plaats muren.
+//            6. Check of er een storm komt.
+//            6a. Zo ja, storm. 
+                if(sheepPhase == 5){System.out.println("Here they come!");}
+//            7. Kijk of er verloren is. (break)
+//            8. Ga naar de volgende beurt.
+          }
+//        4. Geef een samenvatting. 
+          if(gewonnen){
+              System.out.println("Congratulations! Your dragons are safe!");
+          }
+          if(verloren){
+              System.out.println("Too bad, you lost. Maybe next time!");
+          }
+     
     }
-
-    /*
-        2. Player 0 legt 3 tegels aan. 
-        3. Doorloop een beurt:  1. Volgende fase schapen
-                                2. Open de bovenste tegel.
-                                3. Plaats die tegel.
-                                3a. Voer mogelijk effect uit.
-                                4. Kies 1 van 3:    1. Verplaats een draak.
-                                                    2. Leg een open tegel aan.
-                                                    3. Krijg drie nieuwe open tegels.
-                                4a. Kijk of er gewonnen is. (break)
-                                5. Plaats muren.
-                                6. Check of er een storm komt.
-                                6a. Zo ja, storm. 
-                                7. Kijk of er verloren is. (break)
-                                8. Ga naar de volgende beurt.
-        4. Geef een samenvatting. 
-     */
-
     public void dispose() {
 
     }
-
+    public String getSheepState(){
+        switch(sheepPhase){
+            case 1: sheepState = "sunny";
+            case 2: sheepState = "cloudy";
+            case 3: sheepState = "breezy";
+            case 4: sheepState = "windy";
+            case 5: sheepState = "rainy";
+            case 6: sheepState = "stormy";
+            default: System.out.println("My, but it's misty today");
+        }
+        return sheepState;
+    }
 }
