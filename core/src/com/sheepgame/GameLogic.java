@@ -11,6 +11,8 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import static com.sheepgame.GameScreen.GAME;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,12 +38,8 @@ public class GameLogic implements Screen {
         gameScreen = new GameScreen(game);
         game.setScreen(gameScreen);
         gameScreen.render(.5f);
-        // Maak een hexgrid
-        //Maak spelers (nu nog even 1)
-        //Maak schaapstatussen
-        //Toon alles dat gemaakt is in gamescreen
-        //Klaar
-        phase = 3;
+        //TODO: Maak spelers (nu nog even 1)
+        phase = 1;
     }
 
     public static void update() {
@@ -57,21 +55,25 @@ public class GameLogic implements Screen {
                     sheepPhase = 1;
                 }
                 SideMenu.sheepState.setText(GameLogic.getSheepState());
-                phase = 3;
+                phase = 2;
                 break;
 //     2. Open de bovenste tegel.
             case 2:
+                openTile();
                 break;
 //     3. Plaats die tegel.
             case 3:
+                clickNextTile();
+                break;
+            case 31:
                 placeTile();
                 break;
 //        3a. Voer mogelijk effect uit.
-            case 31:
+            case 32:
                 break;
 //     4. Kies 1 van 3: 
             case 4:
-                clickSideMenu();
+
                 clickOpenTile();
                 break;
 //                      1. Verplaats een draak.
@@ -87,11 +89,11 @@ public class GameLogic implements Screen {
 //     5. Plaats muren.
             case 5:
                 break;
-//     6. Check of er een storm komt.
+//     6. Check of er een storm komt. Zo ja, storm!
             case 6:
-                break;
-//        6a. Zo ja, storm. 
-            case 61:
+                if ("stormy" == sheepState) {
+                    sheepStorm();
+                } else {phase = 1;}
                 break;
 //     7. Kijk of er verloren is. (break)
             case 7:
@@ -177,8 +179,10 @@ public class GameLogic implements Screen {
                     GAME.gamelogic.hexmap.checkPlekken();
                 }
             }
+            SideMenu.nextTileButton.setVisible(false);
             phase = 4;
         }
+        if (GAME.gamelogic.hexmap.drawPile.size == 0){phase = 4;}
     }
 
     private static void placeOpenTile() {
@@ -188,17 +192,18 @@ public class GameLogic implements Screen {
                 GAME.gamelogic.hexmap.placeOpenTile(thatTile[0], thatTile[1], openTile, openTileNumber);
                 GAME.gamelogic.hexmap.checkPlekken();
             }
-            phase = 4;
+            phase = 6;
         }
 
     }
 
-    private static void clickSideMenu() {
+    private static void clickNextTile() {
         SideMenu.nextTileButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (phase == 4) {
-                    phase = 1;
+                if (phase == 3) {
+                    phase = 31;
+
                 }
             }
         });
@@ -210,9 +215,9 @@ public class GameLogic implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if (phase == 4) {
                     System.out.println("Geklikt op de eerste");
-                    phase = 41;
                     openTileNumber = 1;
                     openTile = SideMenu.openFirst;
+                    phase = 41;
                 }
             }
         });
@@ -236,5 +241,24 @@ public class GameLogic implements Screen {
                 }
             }
         });
+    }
+
+    private static void openTile() {
+        SideMenu.drawPile.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (phase == 2) {
+                    SideMenu.nextTileButton.setVisible(true);
+                    phase = 3;
+                }
+            }
+        });
+    }
+
+    private static void sheepStorm() {
+        if(SheepComeStorming.hereTheyCome()){
+            phase = 1;
+        }
+        
     }
 }

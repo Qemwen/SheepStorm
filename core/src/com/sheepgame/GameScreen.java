@@ -62,7 +62,7 @@ public class GameScreen implements Screen {
         // tell the camera to update its matrices.
         camera.update();
         int[] backgroundLayers = {0}; // don't allocate every frame!
-        int[] foregroundLayers = {1};    // don't allocate every frame!
+        int[] foregroundLayers = {1,2};    // don't allocate every frame!
         GAME.gamelogic.hexmap.rendererBG.render(backgroundLayers);
         GAME.gamelogic.hexmap.rendererHex.render(foregroundLayers);
         sideMenu.render();

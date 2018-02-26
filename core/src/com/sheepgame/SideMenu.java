@@ -25,11 +25,16 @@ public class SideMenu {
     public static TextButton button;
     Table table;
     static ImageButton nextTileButton;
-     static ImageButton firstOpenTile;
-      static ImageButton secondOpenTile;
-       static ImageButton thirdOpenTile;
+    static ImageButton firstOpenTile;
+    static ImageButton secondOpenTile;
+    static ImageButton thirdOpenTile;
+    static ImageButton drawPile;
     static String sheepWeather;
     static Label sheepState;
+    static Label directionLabel;
+    static Label strengthLabel;
+        static Label direction;
+    static Label strength;
     static int drawPileSize = 60;
     static StaticTiledMapTile openFirst = (StaticTiledMapTile) Hexmap.drawPile.pop();
     static StaticTiledMapTile openSecond = (StaticTiledMapTile) Hexmap.drawPile.pop();
@@ -55,14 +60,18 @@ public class SideMenu {
 
         table.add(button).width(100);
         table.row();
+        drawPile = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("img/drawPile.png")))));
+        table.add(drawPile).size(112f, 105f);
+        table.row();
         StaticTiledMapTile peek = (StaticTiledMapTile) Hexmap.drawPile.peek();
         nextTileButton = new ImageButton(new TextureRegionDrawable(peek.getTextureRegion()));
         table.add(nextTileButton).size(112f, 97f);
+        nextTileButton.setVisible(false);
         table.row();
 
         table.add(sheepState);
         table.row();
-   
+
         firstOpenTile = new ImageButton(new TextureRegionDrawable(openFirst.getTextureRegion()));
         table.add(firstOpenTile);
         table.row();
@@ -71,6 +80,20 @@ public class SideMenu {
         table.row();
         thirdOpenTile = new ImageButton(new TextureRegionDrawable(openThird.getTextureRegion()));
         table.add(thirdOpenTile);
+        table.row();
+        directionLabel = new Label("The sheep come from this side: ", Constants.SKIN, "font-label", Color.WHITE);
+        directionLabel.setVisible(false);
+        table.add(directionLabel);
+        direction = new Label("", Constants.SKIN, "font-label", Color.WHITE);
+        direction.setVisible(false);
+        table.add(direction);
+        table.row();
+        strengthLabel = new Label("Their force is this strong: ", Constants.SKIN, "font-label", Color.WHITE);
+        strengthLabel.setVisible(false);
+        table.add(strengthLabel);
+        strength = new Label("", Constants.SKIN, "font-label", Color.WHITE);
+        strength.setVisible(false);
+        table.add(strength);
         stage.addActor(table);
     }
 
@@ -93,10 +116,10 @@ public class SideMenu {
         if (Hexmap.drawPile.size > 0 && drawPileSize != Hexmap.drawPile.size) {
             StaticTiledMapTile first = (StaticTiledMapTile) Hexmap.drawPile.peek();
             //nextTileButton. (new TextureRegionDrawable();
-            nextTileButton.getStyle().imageUp=new TextureRegionDrawable(first.getTextureRegion());
+            nextTileButton.getStyle().imageUp = new TextureRegionDrawable(first.getTextureRegion());
             drawPileSize = Hexmap.drawPile.size;
-        } else if (Hexmap.drawPile.size == 0){
-            nextTileButton.getStyle().imageUp= hexagon;
+        } else if (Hexmap.drawPile.size == 0) {
+            nextTileButton.getStyle().imageUp = hexagon;
         }
     }
 }

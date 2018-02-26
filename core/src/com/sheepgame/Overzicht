@@ -3,18 +3,20 @@ De structuur.
     - SheepStorm beheert waar in het spel je zit (main menu of gamescreen enzo).
     - MainMenuScreen maakt een menu vanuit waar ik het spel kan beginnen (en wie weet later nog opties).
     - Gamescreen is de tekenmagic en de input, maar niet de gamelogic. 
+    - SideMenu tekent het menu
     - GameLogic is waar de magic happens. 
     - Hexmap zorgt voor het grid. Hier worden de Tiles gemaakt en bijgehouden of en waar ze geplaatst kunnen worden of zijn.
-    - Tile (mogelijk een soort van Cell) houdt bij hoe het met de tegel (en zn buren) gaat.
+    - Plek (een soort Cell) houdt bij hoe het met de tegel (en zn buren) gaat.
+    - Storm handelt de sheepstorm af.
     - Player*** gaat zorgen voor rollen en dat soort dingen.
-    - Storm*** gaat de sheepstorm afhandelen.
     - Walls*** gaat de muurtjes bijhouden.
     - Dragon*** houdt bij van de draakjes of ze geplaatst zijn, waar ze zijn en of ze veilig zijn. 
   
 De volgende stappen.
-    - Snappen wat viewports zijn en doen
-    - communicatie tussen gamescreen en gamelogic (doe een stap in gamelogic, voer gamescreen uit, terug naar gamelogic)
-    - een menu met een knop aan de zijkant maken
+    - Het spel mag niet doorgaan als het plaatsen van een tegel niet is gelukt
+    - Dingen in het sidemenu naast elkaar kunnen zetten
+    - De tegels van effectlayer moeten mooi over de layer liggen (mogelijk source image aanpassen?)
+    - De verdere uitvoer van de SheepStorm
 
 
 
