@@ -6,13 +6,17 @@
 package com.sheepgame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import static com.sheepgame.GameScreen.GAME;
 
 /**
  *
  * @author Carlijn
  */
-public class GameLogic {
+public class GameLogic implements Screen {
 
     // 1. Het spel initieert. Dingen worden klaargelegd
     //Methode initieer?
@@ -20,39 +24,151 @@ public class GameLogic {
     public static SheepStorm game;
     boolean gewonnen = false;
     boolean verloren = false;
-    int sheepPhase;
-    String sheepState;
-    
+    static int sheepPhase = 1;
+    static String sheepState;
+    static int phase;
+    static GameScreen gameScreen;
+    static int openTileNumber;
+    static StaticTiledMapTile openTile;
+
     public void init(SheepStorm game) {
         this.game = game;
-        GameScreen gameScreen = new GameScreen(game);
+        gameScreen = new GameScreen(game);
         game.setScreen(gameScreen);
-        gameScreen.render(.1f);
-        // Maak een hexgridg
+        gameScreen.render(.5f);
+        // Maak een hexgrid
         //Maak spelers (nu nog even 1)
         //Maak schaapstatussen
         //Toon alles dat gemaakt is in gamescreen
         //Klaar
-    
+        phase = 3;
+    }
 
-    
-//        2. Player 0 legt 3 tegels aan. 
-//        3. Doorloop een beurt:
-          while(gewonnen == false && verloren == false){
-//            1. Volgende fase schapen
-                if(sheepPhase < 5){
-                    sheepPhase ++;
+    public static void update() {
 
-                    System.out.println("The sheep just got stormier. They are now: " + getSheepState());
+//  2. Player 0 legt 3 tegels aan. 
+//  3. Doorloop een beurt:
+        switch (phase) {
+//     1. Volgende fase schapen
+            case 1:
+                if (sheepPhase < 6) {
+                    sheepPhase++;
                 } else {
                     sheepPhase = 1;
-                    System.out.println("The sheep are calm again. They are now: " + getSheepState());
                 }
-//            2. Open de bovenste tegel.
-                SideMenu.updateNext();
-//            3. Plaats die tegel.
-                gameScreen.render(1f);
-                 if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .9)) {
+                SideMenu.sheepState.setText(GameLogic.getSheepState());
+                phase = 3;
+                break;
+//     2. Open de bovenste tegel.
+            case 2:
+                break;
+//     3. Plaats die tegel.
+            case 3:
+                placeTile();
+                break;
+//        3a. Voer mogelijk effect uit.
+            case 31:
+                break;
+//     4. Kies 1 van 3: 
+            case 4:
+                clickSideMenu();
+                clickOpenTile();
+                break;
+//                      1. Verplaats een draak.
+
+//                      2. Leg een open tegel aan.
+            case 41:
+                placeOpenTile();
+                break;
+//                      3. Krijg drie nieuwe open tegels.
+//        4a. Kijk of er gewonnen is. 
+            case 44:
+                break;
+//     5. Plaats muren.
+            case 5:
+                break;
+//     6. Check of er een storm komt.
+            case 6:
+                break;
+//        6a. Zo ja, storm. 
+            case 61:
+                break;
+//     7. Kijk of er verloren is. (break)
+            case 7:
+                break;
+//     8. Ga naar de volgende beurt. 
+        }
+//  4. Geef een samenvatting. 
+
+    }
+
+    public void dispose() {
+
+    }
+
+    public static String getSheepState() {
+        switch (sheepPhase) {
+
+            case 1:
+                sheepState = "sunny";
+                break;
+            case 2:
+                sheepState = "cloudy";
+                break;
+            case 3:
+                sheepState = "breezy";
+                break;
+            case 4:
+                sheepState = "windy";
+                break;
+            case 5:
+                sheepState = "rainy";
+                break;
+            case 6:
+                sheepState = "stormy";
+                break;
+            default:
+                System.out.println("My, but it's misty today");
+        }
+        return sheepState;
+    }
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
+//        if (Gdx.input.justTouched()) {
+//            sheepPhase++;
+//            System.out.println("Sheep state = " + getSheepState());
+//
+//        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    private static void placeTile() {
+        if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .75)) {
             if (GAME.gamelogic.hexmap.drawPile.size > 0) {
                 int[] thatTile = gameScreen.whichTile(Gdx.input.getX(), Gdx.input.getY());
 
@@ -61,45 +177,64 @@ public class GameLogic {
                     GAME.gamelogic.hexmap.checkPlekken();
                 }
             }
+            phase = 4;
         }
-//            3a. Voer mogelijk effect uit.
-//            4. Kies 1 van 3:    1. Verplaats een draak.
-//                                2. Leg een open tegel aan.
-//                                3. Krijg drie nieuwe open tegels.
-//            4a. Kijk of er gewonnen is. (break)
-                if(Hexmap.drawPile.size == 0){
-                    gewonnen = true;
-                    break;
-                }
-//            5. Plaats muren.
-//            6. Check of er een storm komt.
-//            6a. Zo ja, storm. 
-                if(sheepPhase == 5){System.out.println("Here they come!");}
-//            7. Kijk of er verloren is. (break)
-//            8. Ga naar de volgende beurt.
-          }
-//        4. Geef een samenvatting. 
-          if(gewonnen){
-              System.out.println("Congratulations! Your dragons are safe!");
-          }
-          if(verloren){
-              System.out.println("Too bad, you lost. Maybe next time!");
-          }
-     
     }
-    public void dispose() {
+
+    private static void placeOpenTile() {
+        if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .75)) {
+            int[] thatTile = gameScreen.whichTile(Gdx.input.getX(), Gdx.input.getY());
+            if (GAME.gamelogic.hexmap.checkPlek(thatTile[0], thatTile[1])) {
+                GAME.gamelogic.hexmap.placeOpenTile(thatTile[0], thatTile[1], openTile, openTileNumber);
+                GAME.gamelogic.hexmap.checkPlekken();
+            }
+            phase = 4;
+        }
 
     }
-    public String getSheepState(){
-        switch(sheepPhase){
-            case 1: sheepState = "sunny";
-            case 2: sheepState = "cloudy";
-            case 3: sheepState = "breezy";
-            case 4: sheepState = "windy";
-            case 5: sheepState = "rainy";
-            case 6: sheepState = "stormy";
-            default: System.out.println("My, but it's misty today");
-        }
-        return sheepState;
+
+    private static void clickSideMenu() {
+        SideMenu.nextTileButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (phase == 4) {
+                    phase = 1;
+                }
+            }
+        });
+    }
+
+    private static void clickOpenTile() {
+        SideMenu.firstOpenTile.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (phase == 4) {
+                    System.out.println("Geklikt op de eerste");
+                    phase = 41;
+                    openTileNumber = 1;
+                    openTile = SideMenu.openFirst;
+                }
+            }
+        });
+        SideMenu.secondOpenTile.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (phase == 4) {
+                    phase = 41;
+                    openTileNumber = 2;
+                    openTile = SideMenu.openSecond;
+                }
+            }
+        });
+        SideMenu.thirdOpenTile.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (phase == 4) {
+                    phase = 41;
+                    openTileNumber = 3;
+                    openTile = SideMenu.openThird;
+                }
+            }
+        });
     }
 }

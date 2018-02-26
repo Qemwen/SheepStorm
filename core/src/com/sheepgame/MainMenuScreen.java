@@ -38,23 +38,23 @@ public class MainMenuScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
    
         camera.update();
-        Label welcome = new Label("Welcome to SheepStorm!", Constants.SKIN, "font", Color.LIME);
+        Label welcome = new Label("Welcome to SheepStorm!", Constants.SKIN, "font-label", Color.LIME);
         welcome.setPosition((float)(Constants.GAMEWIDTH * .1), (float)(Constants.GAMEHEIGHT * .55));
         welcome.setFontScale(1.5f);
 
         Label intro = new Label("Due to recent climate changes new mushrooms are growing in the meadows surrounding your dragon farm. "
                                + "These mushrooms make the sheep go crazy and when they are, they come rampaging in a great flock, trampling everything in their way. "
-                               + "Including your baby dragons. Bring them home safely before they get trampled!", Constants.SKIN, "font", Color.WHITE);
+                               + "Including your baby dragons. Bring them home safely before they get trampled!", Constants.SKIN, "font-label", Color.WHITE);
         intro.setPosition((float)(Constants.GAMEWIDTH * .1), (float)(Constants.GAMEHEIGHT * .2));
         intro.setSize(500, 200);
         intro.setWrap(true);
      
-        Label start = new Label("Tap anywhere to start", Constants.SKIN,  "font", Color.WHITE);
+        Label start = new Label("Tap anywhere to start", Constants.SKIN,  "font-label", Color.WHITE);
         start.setPosition((float)(Constants.GAMEWIDTH * .1), (float)(Constants.GAMEHEIGHT * .15));
         
-        Image madSheep = new Image(new Texture(Gdx.files.internal("madSheep.jpg")));
+        Image madSheep = new Image(new Texture(Gdx.files.internal("img/madSheep.jpg")));
         madSheep.setBounds((float)(Constants.GAMEWIDTH *.7), (float)(Constants.GAMEHEIGHT *.25), 200, 200);
-        Image angrySheep = new Image(new Texture(Gdx.files.internal("angrySheep.jpg")));        
+        Image angrySheep = new Image(new Texture(Gdx.files.internal("img/angrySheep.jpg")));        
         angrySheep.setBounds((float)(Constants.GAMEWIDTH *.7), (float)(Constants.GAMEHEIGHT *.55), 200, 200);        
 
         stage.addActor(welcome);

@@ -11,8 +11,10 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import static com.sheepgame.SideMenu.stage;
 
 public class GameScreen implements Screen {
 
@@ -26,19 +28,26 @@ public class GameScreen implements Screen {
 
     public GameScreen(final SheepStorm game) {
         this.GAME = game;
-        stampede = Gdx.audio.newSound(Gdx.files.internal("stampede.wav"));
-        //bleating = Gdx.audio.newSound(Gdx.files.internal("bleating.wav"));
-        meadowMusic = Gdx.audio.newMusic(Gdx.files.internal("meadow.wav"));
+        stampede = Gdx.audio.newSound(Gdx.files.internal("sound/stampede.wav"));
+        //bleating = Gdx.audio.newSound(Gdx.files.internal("sound/bleating.wav"));
+        meadowMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/meadow.wav"));
         meadowMusic.setLooping(true);
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
 
         camera.setToOrtho(false, Constants.GAMEWIDTH, Constants.GAMEHEIGHT);
         GAME.batch.setProjectionMatrix(camera.combined);
-        GameLogic.hexmap.renderer.setView(camera);
+
+//        camera.position.add(100f);
+//        camera.project(Hexmap.center);
+        camera.viewportHeight = 1300f;
+        camera.viewportWidth = 5000f;
+        camera.lookAt(1000f, 1000f, 10f);
+        GameLogic.hexmap.rendererHex.setView(camera);
         sideMenu = new SideMenu();
         Gdx.input.setInputProcessor(SideMenu.stage);
         sideMenu.render();
+
     }
 
     @Override
@@ -52,22 +61,17 @@ public class GameScreen implements Screen {
 
         // tell the camera to update its matrices.
         camera.update();
-        GAME.gamelogic.hexmap.renderer.render();
+        int[] backgroundLayers = {0}; // don't allocate every frame!
+        int[] foregroundLayers = {1};    // don't allocate every frame!
+        GAME.gamelogic.hexmap.rendererBG.render(backgroundLayers);
+        GAME.gamelogic.hexmap.rendererHex.render(foregroundLayers);
         sideMenu.render();
-        if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .9)) {
-            if (GAME.gamelogic.hexmap.drawPile.size > 0) {
-                int[] thatTile = whichTile(Gdx.input.getX(), Gdx.input.getY());
-
-                if (GAME.gamelogic.hexmap.checkPlek(thatTile[0], thatTile[1])) {
-                    GAME.gamelogic.hexmap.placeTile(thatTile[0], thatTile[1]);
-                    GAME.gamelogic.hexmap.checkPlekken();
-                }
-            }
-        }
+        GameLogic.update();
     }
 
     @Override
     public void resize(int width, int height) {
+
     }
 
     @Override

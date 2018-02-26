@@ -16,6 +16,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -28,18 +31,22 @@ public class Hexmap {
     Texture hexture;
     Texture hexagon;
     TiledMapTile[] availableTiles;
-    public HexagonalTiledMapRenderer renderer;
+    public HexagonalTiledMapRenderer rendererHex;
+    public OrthogonalTiledMapRenderer rendererBG;
     static Array drawPile;
-    static TiledMapTileLayer layer;
-    int hoogte = 10;
-    int breedte = 12;
-    StaticTiledMapTile lightblue = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("lightblue.png"))));
+    public static TiledMapTileLayer layer;
+    int hoogte = Constants.rows;
+    int breedte = Constants.columns;
+    StaticTiledMapTile lightblue = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/lightblue.png"))));
+    Texture background;
+    public static Vector3 center;
+    StaticTiledMapTile newOpenTile;
 
     public Hexmap() {
-        hexture = new Texture(Gdx.files.internal("hexes.png"));
+        hexture = new Texture(Gdx.files.internal("img/hexes.png"));
         TextureRegion[][] hexes = TextureRegion.split(hexture, 112, 97);
         //Verklein het plaatje naar de tegel
-        Pixmap groteHexagon = new Pixmap(Gdx.files.internal("hexagon.png"));
+        Pixmap groteHexagon = new Pixmap(Gdx.files.internal("img/hexagon.png"));
         Pixmap kleineHexagon = new Pixmap(112, 97, groteHexagon.getFormat());
         kleineHexagon.drawPixmap(groteHexagon,
                 0, 0, groteHexagon.getWidth(), groteHexagon.getHeight(),
@@ -51,6 +58,19 @@ public class Hexmap {
 
         map = new TiledMap();
         MapLayers layers = map.getLayers();
+
+        //Make a background
+        background = new Texture(Gdx.files.internal("img/grass.jpg"));
+        TextureRegion textureRegion = new TextureRegion(background);
+        textureRegion.setRegion(0, 0, Constants.GAMEWIDTH, Constants.GAMEHEIGHT);
+        TiledMapTileLayer tileLayer = new TiledMapTileLayer(breedte, hoogte, 112, 97);
+        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+        TextureRegion background = new TextureRegion(new Texture(Gdx.files.internal("img/grass.jpg")), (int) (Constants.GAMEWIDTH * .8), (int) (Constants.GAMEHEIGHT));
+        cell.setTile(new StaticTiledMapTile(background));
+        tileLayer.setCell(0, 0, cell);
+        layers.add(tileLayer);
+
+        //Make tiles
         availableTiles = new TiledMapTile[60];
 
         for (int i = 0; i < availableTiles.length; i++) {
@@ -72,7 +92,6 @@ public class Hexmap {
 
         //Bouw het veld
         layer = new TiledMapTileLayer(breedte, hoogte, 112, 97);
-
         //Maak alle cells en tiles
         for (int l = 0;
                 l < 1; l++) {
@@ -82,30 +101,68 @@ public class Hexmap {
                     layer.setCell(x, y, plek);
                 }
             }
-
         }
         layers.add(layer);
 
         //Leg de starttegel neer
         StaticTiledMapTile startTile = new StaticTiledMapTile(new TextureRegion(hexagon));
-        Cell celly = new Plek(4, 4);
+        Cell celly = new Plek(5, 3);
         celly.setTile(startTile);
-        layer.setCell(4, 4, celly);
+        layer.setCell(5, 3, celly);
         checkPlekken();
-        renderer = new HexagonalTiledMapRenderer(map);
+        rendererHex = new HexagonalTiledMapRenderer(map);
+        rendererBG = new OrthogonalTiledMapRenderer(map);
+        center = new Vector3(layer.getWidth() * layer.getTileWidth() / 2, layer.getHeight() * layer.getTileHeight() / 2, 0);
+
     }
 
     public void placeTile(int x, int y) {
-        //System.out.println("Ik ga checken" + x + y);
         checkPlek(x, y);
-        //System.out.println("Ik heb gecheckt " + x + y);
         if (x < breedte && y < hoogte) {
             Cell cell1 = new Plek(x, y);
             cell1.setTile((StaticTiledMapTile) drawPile.pop());
             layer.setCell(x, y, cell1);
-            SideMenu.updateNext();
-            SideMenu.render();
-        } 
+        }
+    }
+
+    public void placeOpenTile(int x, int y, StaticTiledMapTile openTile, int tileLocation) {
+        checkPlek(x, y);
+        System.out.println("Ik plaats een open tile op " + x + y);
+        if (x < breedte && y < hoogte) {
+            Cell cell1 = new Plek(x, y);
+            cell1.setTile(openTile);
+            layer.setCell(x, y, cell1);
+            if (drawPile.size > 0) {
+                switch (tileLocation) {
+                    case 1:
+                        SideMenu.openFirst = (StaticTiledMapTile) Hexmap.drawPile.pop();
+                        SideMenu.firstOpenTile.getStyle().imageUp = new TextureRegionDrawable(SideMenu.openFirst.getTextureRegion());
+                        break;
+                    case 2:
+                        SideMenu.openSecond = (StaticTiledMapTile) Hexmap.drawPile.pop();
+                        SideMenu.secondOpenTile.getStyle().imageUp = new TextureRegionDrawable(SideMenu.openSecond.getTextureRegion());
+                        break;
+                    case 3:
+                        SideMenu.openThird = (StaticTiledMapTile) Hexmap.drawPile.pop();
+                        SideMenu.thirdOpenTile.getStyle().imageUp = new TextureRegionDrawable(SideMenu.openThird.getTextureRegion());
+                        break;
+                }
+            } else {
+                 switch (tileLocation) {
+                    case 1:
+                        SideMenu.firstOpenTile.setVisible(false);
+                        break;
+                    case 2:
+                        SideMenu.secondOpenTile.setVisible(false);
+                        break;
+                    case 3:
+                        SideMenu.thirdOpenTile.setVisible(false);
+                        break;
+                }               
+            }
+            //pop om de lege plek van tilelocation te vullen.
+
+        }
     }
 
     public void checkPlekken() {
@@ -125,7 +182,6 @@ public class Hexmap {
         Plek checkedPlek = (Plek) layer.getCell(x, y);
         if (checkedPlek.getStatus() == "available" || checkedPlek.getStatus() == "empty") {
             return checkedPlek.hasNeighbours(layer);
-
         } else {
             return false;
         }
