@@ -36,12 +36,13 @@ public class SideMenu {
         static Label direction;
     static Label strength;
     static int drawPileSize = 60;
-    static StaticTiledMapTile openFirst = (StaticTiledMapTile) Hexmap.drawPile.pop();
-    static StaticTiledMapTile openSecond = (StaticTiledMapTile) Hexmap.drawPile.pop();
-    static StaticTiledMapTile openThird = (StaticTiledMapTile) Hexmap.drawPile.pop();
+    static StaticTiledMapTile openFirst;
+    static StaticTiledMapTile openSecond;
+    static StaticTiledMapTile openThird;
     static Drawable hexagon = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("img/hexagon.png"))));
 
     public SideMenu() {
+
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
@@ -63,7 +64,7 @@ public class SideMenu {
         drawPile = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("img/drawPile.png")))));
         table.add(drawPile).size(112f, 105f);
         table.row();
-        StaticTiledMapTile peek = (StaticTiledMapTile) Hexmap.drawPile.peek();
+        StaticTiledMapTile peek = (StaticTiledMapTile) Hexmap.drawPile.getValueAt(0);
         nextTileButton = new ImageButton(new TextureRegionDrawable(peek.getTextureRegion()));
         table.add(nextTileButton).size(112f, 97f);
         nextTileButton.setVisible(false);
@@ -71,7 +72,13 @@ public class SideMenu {
 
         table.add(sheepState);
         table.row();
-
+        openFirst = (StaticTiledMapTile) Hexmap.drawPile.getValueAt(0); Hexmap.drawPile.removeIndex(0);
+        openSecond = (StaticTiledMapTile) Hexmap.drawPile.getValueAt(0); Hexmap.drawPile.removeIndex(0);
+        openThird = (StaticTiledMapTile) Hexmap.drawPile.getValueAt(0); Hexmap.drawPile.removeIndex(0);
+        
+        Hexmap.drawPile.removeIndex(0);
+        
+        
         firstOpenTile = new ImageButton(new TextureRegionDrawable(openFirst.getTextureRegion()));
         table.add(firstOpenTile);
         table.row();
@@ -114,7 +121,7 @@ public class SideMenu {
 
     public static void updateNext() {
         if (Hexmap.drawPile.size > 0 && drawPileSize != Hexmap.drawPile.size) {
-            StaticTiledMapTile first = (StaticTiledMapTile) Hexmap.drawPile.peek();
+            StaticTiledMapTile first = (StaticTiledMapTile) Hexmap.drawPile.getValueAt(0);
             //nextTileButton. (new TextureRegionDrawable();
             nextTileButton.getStyle().imageUp = new TextureRegionDrawable(first.getTextureRegion());
             drawPileSize = Hexmap.drawPile.size;

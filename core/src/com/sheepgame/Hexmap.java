@@ -20,6 +20,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -33,7 +36,7 @@ public class Hexmap {
     TiledMapTile[] availableTiles;
     public HexagonalTiledMapRenderer rendererHex;
     public OrthogonalTiledMapRenderer rendererBG;
-    static Array drawPile;
+    static ArrayMap drawPile;
     public static TiledMapTileLayer layer;
     public static TiledMapTileLayer effectLayer;
     int hoogte = Constants.rows;
@@ -43,10 +46,11 @@ public class Hexmap {
     Texture background;
     public static Vector3 center;
     StaticTiledMapTile newOpenTile;
+    TextureRegion[][] hexes;
 
     public Hexmap() {
         hexture = new Texture(Gdx.files.internal("img/hexes.png"));
-        TextureRegion[][] hexes = TextureRegion.split(hexture, 112, 97);
+        hexes = TextureRegion.split(hexture, 112, 97);
         //Verklein het plaatje naar de tegel
         Pixmap groteHexagon = new Pixmap(Gdx.files.internal("img/hexagon.png"));
         Pixmap kleineHexagon = new Pixmap(112, 97, groteHexagon.getFormat());
@@ -73,25 +77,24 @@ public class Hexmap {
         layers.add(tileLayer);
 
         //Make tiles
-        availableTiles = new TiledMapTile[60];
+        drawPile = new ArrayMap();
 
-        for (int i = 0; i < availableTiles.length; i++) {
+        for (int i = 0; i < 60; i++) {
             //Later komen hier de 60 verschillende plaatjes
+
             if (i < 20) {
-                availableTiles[i] = new StaticTiledMapTile(
-                        new TextureRegion(hexes[0][0]));
+                drawPile.put(i, new StaticTiledMapTile(new TextureRegion(hexes[0][0])));
             } else if (i < 40) {
-                availableTiles[i] = new StaticTiledMapTile(
-                        new TextureRegion(hexes[0][1]));
+                drawPile.put(i, new StaticTiledMapTile(new TextureRegion(hexes[0][1])));
             } else {
-                availableTiles[i] = new StaticTiledMapTile(
-                        new TextureRegion(hexes[1][0]));
+                drawPile.put(i, new StaticTiledMapTile(new TextureRegion(hexes[1][0])));
             }
         }
         //Maak er een geshufflede lijst van
-        drawPile = new Array(availableTiles);
+        
         drawPile.shuffle();
-
+        System.out.println("Drawpile = " + drawPile.get(0));
+        
         //Bouw het veld
         layer = new TiledMapTileLayer(breedte, hoogte, 112, 97);
         //Maak alle cells en tiles
@@ -132,9 +135,12 @@ public class Hexmap {
         checkPlek(x, y);
         if (x < breedte && y < hoogte) {
             Cell cell1 = new Plek(x, y);
-            cell1.setTile((StaticTiledMapTile) drawPile.pop());
+            cell1.setTile((StaticTiledMapTile) drawPile.getValueAt(0));
             layer.setCell(x, y, cell1);
-            Plek plek1 = (Plek) cell1;
+            Plek plek1 = (Plek) layer.getCell(x,y);
+            plek1.setDefenses(defenses(cell1.getTile().getTextureRegion()));
+            System.out.println("Defenses van de geplaatste tegel: " + plek1.defenses);
+            drawPile.removeIndex(0);
         }
     }
 
@@ -149,15 +155,15 @@ public class Hexmap {
             if (drawPile.size > 0) {
                 switch (tileLocation) {
                     case 1:
-                        SideMenu.openFirst = (StaticTiledMapTile) Hexmap.drawPile.pop();
+                        SideMenu.openFirst = (StaticTiledMapTile) drawPile.getValueAt(0); drawPile.removeIndex(0);
                         SideMenu.firstOpenTile.getStyle().imageUp = new TextureRegionDrawable(SideMenu.openFirst.getTextureRegion());
                         break;
                     case 2:
-                        SideMenu.openSecond = (StaticTiledMapTile) Hexmap.drawPile.pop();
+                        SideMenu.openSecond = (StaticTiledMapTile) Hexmap.drawPile.getValueAt(0); drawPile.removeIndex(0);
                         SideMenu.secondOpenTile.getStyle().imageUp = new TextureRegionDrawable(SideMenu.openSecond.getTextureRegion());
                         break;
                     case 3:
-                        SideMenu.openThird = (StaticTiledMapTile) Hexmap.drawPile.pop();
+                        SideMenu.openThird = (StaticTiledMapTile) Hexmap.drawPile.getValueAt(0); drawPile.removeIndex(0);
                         SideMenu.thirdOpenTile.getStyle().imageUp = new TextureRegionDrawable(SideMenu.openThird.getTextureRegion());
                         break;
                 }
@@ -214,5 +220,76 @@ public class Hexmap {
                 }
             }
         }
+    }
+     private ArrayList<Integer> defenses(TextureRegion tegel){
+        ArrayList<Integer> defenses = new ArrayList();
+        if (tegel.getTexture().equals(hexes[0][0])) {defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0));}
+        if (tegel.getTexture().equals(hexes[0][1])) {defenses.addAll(Arrays.asList(1, 1, 1, 1, 1, 1));}       
+        if (tegel.getTexture().equals(hexes[1][0])) {defenses.addAll(Arrays.asList(2, 2, 2, 2, 2, 2));} 
+//         switch(tegel){
+//             case 0: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 0: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 1: defenses.addAll(Arrays.asList(1, 1, 1, 1, 1, 1)); break;
+//           case 2: defenses.addAll(Arrays.asList(2, 2, 2, 2, 2, 2)); break;
+//           case 3: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 4: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 5: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 6: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 7: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 8: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 9: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 10: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 11: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 12: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 13: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 14: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 15: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 16: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 17: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 18: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 19: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 20: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 21: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 22: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 23: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 24: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 25: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 26: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 27: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 28: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 29: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 30: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 31: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 32: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 33: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 34: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 35: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 36: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 37: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 38: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 39: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 40: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 41: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 42: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 43: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 44: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 45: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 46: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 47: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 48: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 49: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 50: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 51: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 52: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 53: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 54: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 55: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 56: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 57: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 58: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 59: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+//           case 60: defenses.addAll(Arrays.asList(0, 0, 0, 0, 0, 0)); break;
+            System.out.println("Defenses = " + defenses);
+        return defenses;
     }
 }

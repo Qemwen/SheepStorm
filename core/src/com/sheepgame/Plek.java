@@ -1,10 +1,8 @@
 package com.sheepgame;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import static com.sheepgame.Hexmap.layer;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,6 +13,7 @@ public class Plek extends TiledMapTileLayer.Cell {
     private String status = "empty"; //Possible: empty, available, tiled, trampled
     int boven;
     int links;
+    ArrayList<Integer> defenses;
 
     public Plek(int naarLinks, int naarBoven) {
         links = naarLinks;
@@ -77,4 +76,8 @@ public class Plek extends TiledMapTileLayer.Cell {
         status = "tiled";
         return this;
     }
+    
+   public void setDefenses(ArrayList<Integer> defenses){
+       this.defenses = defenses;
+   }
 }
