@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -23,12 +24,15 @@ public class SideMenu {
 
     static Stage stage;
     public static TextButton button;
+    public static int numberOfWalls;
     Table table;
     static ImageButton nextTileButton;
     static ImageButton firstOpenTile;
     static ImageButton secondOpenTile;
     static ImageButton thirdOpenTile;
     static ImageButton drawPile;
+    static ImageButton walls;
+    static Label wallsNumber;
     static String sheepWeather;
     static Label sheepState;
     static Label directionLabel;
@@ -101,7 +105,14 @@ public class SideMenu {
         strength = new Label("", Constants.SKIN, "font-label", Color.WHITE);
         strength.setVisible(false);
         table.add(strength);
+        table.row();
+        numberOfWalls = 1;
+        walls = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("img/wall.jpg")))));
+        wallsNumber = new Label(String.valueOf(numberOfWalls), Constants.SKIN, "font-label", Color.WHITE);
+        table.add(walls).size(105f, 105f);
+        table.add(wallsNumber);
         stage.addActor(table);
+        
     }
 
     public static void render() {

@@ -32,6 +32,10 @@ public class GameLogic implements Screen {
     static GameScreen gameScreen;
     static int openTileNumber;
     static StaticTiledMapTile openTile;
+    static int currentTileX;
+    static int currentTileY;
+    static int currentSide;
+    static int higher;
 
     public void init(SheepStorm game) {
         this.game = game;
@@ -88,6 +92,15 @@ public class GameLogic implements Screen {
                 break;
 //     5. Plaats muren.
             case 5:
+                placeWall();
+                break;
+//          5a. kies een tegel
+            case 51:
+                chooseTile();
+                break;
+//          5b. kies de kant
+            case 52:
+                chooseSide();
                 break;
 //     6. Check of er een storm komt. Zo ja, storm!
             case 6:
@@ -192,7 +205,7 @@ public class GameLogic implements Screen {
                 GAME.gamelogic.hexmap.placeOpenTile(thatTile[0], thatTile[1], openTile, openTileNumber);
                 GAME.gamelogic.hexmap.checkPlekken();
             }
-            phase = 6;
+            phase = 5;
         }
 
     }
@@ -260,5 +273,57 @@ public class GameLogic implements Screen {
             phase = 1;
         }
         
+    }
+    
+    private static void placeWall(){
+        SideMenu.walls.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(phase == 5){
+                    phase = 51;
+                }
+                
+                if (phase == 4) {
+                    phase = 41;
+                    openTileNumber = 3;
+                    openTile = SideMenu.openThird;
+                }
+            }
+        });
+    }
+    
+    private static void chooseTile(){
+        if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .75)) {
+            if (SideMenu.numberOfWalls > 0) {
+                int[] thatTile = gameScreen.whichTile(Gdx.input.getX(), Gdx.input.getY());
+                currentTileX = thatTile[0];
+                currentTileY = thatTile[1];
+                Plek checkedPlek = (Plek) GAME.gamelogic.hexmap.layer.getCell(currentTileX, currentTileY);
+                if (checkedPlek.getStatus() == "tiled") {
+                    // TODO: geef teze tile een kleurtje
+                    GAME.gamelogic.hexmap.effectLayer.getCell(currentTileX, currentTileY).setTile(GAME.gamelogic.hexmap.green);
+                    phase = 52;
+                }
+            } 
+        }
+    }
+    
+    private static void chooseSide(){
+        if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .75)) {
+            //bepaal de blokjes van currentTile
+            if (currentTileX % 2 == 0) {higher = 50;} 
+            else{higher = 0;}
+            
+            
+            
+            //if mouse hover of klik en sleep over de blokjes
+            //if click or release: plaats daar de wall. 
+            SideMenu.numberOfWalls --;
+            if (SideMenu.numberOfWalls > 0){ phase = 5;}
+            else {phase = 6;}
+            GAME.gamelogic.hexmap.effectLayer.getCell(currentTileX, currentTileY).setTile(null);
+
+            SideMenu.numberOfWalls = 1;
+        }
     }
 }

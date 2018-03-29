@@ -43,6 +43,7 @@ public class Hexmap {
     int breedte = Constants.columns;
     StaticTiledMapTile lightblue = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/lightblue.png"))));
     StaticTiledMapTile red = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/red.png"))));
+    public StaticTiledMapTile green = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/green.png"))));
     Texture background;
     public static Vector3 center;
     StaticTiledMapTile newOpenTile;
