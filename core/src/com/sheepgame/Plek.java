@@ -14,7 +14,8 @@ public class Plek extends TiledMapTileLayer.Cell {
     int boven;
     int links;
     ArrayList<Integer> defenses;
-
+    boolean[] walls = new boolean[6];
+    
     public Plek(int naarLinks, int naarBoven) {
         links = naarLinks;
         boven = naarBoven;
@@ -79,5 +80,17 @@ public class Plek extends TiledMapTileLayer.Cell {
     
    public void setDefenses(ArrayList<Integer> defenses){
        this.defenses = defenses;
+   }
+   
+   public void addWall(int direction){
+       walls[direction - 1] = true;
+   }
+   
+   public void removeWall(int direction){
+       walls[direction - 1] = false;
+   }
+   
+   public boolean[] getWalls(){
+       return walls;
    }
 }

@@ -39,10 +39,14 @@ public class Hexmap {
     static ArrayMap drawPile;
     public static TiledMapTileLayer layer;
     public static TiledMapTileLayer effectLayer;
+    public static TiledMapTileLayer wallsLayer;
+    
     int hoogte = Constants.rows;
     int breedte = Constants.columns;
     StaticTiledMapTile lightblue = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/lightblue.png"))));
     StaticTiledMapTile red = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/red.png"))));
+    StaticTiledMapTile wall1 = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/wall1.png"))));
+    
     public StaticTiledMapTile green = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("img/green.png"))));
     Texture background;
     public static Vector3 center;
@@ -120,6 +124,18 @@ public class Hexmap {
             }
         }
         layers.add(effectLayer);
+        wallsLayer = new TiledMapTileLayer(breedte*3, hoogte*2, Constants.TILELENGTH/2, (int)(Math.sqrt(3) * Constants.TILELENGTH)/2);
+        for (int l = 0;
+                l < 1; l++) {
+            for (int x = 0; x < breedte; x++) {
+                for (int y = 0; y < hoogte; y++) {
+                    Cell myCell = new Cell();
+                    wallsLayer.setCell(x, y, myCell);
+                }
+            }
+        }
+        layers.add(wallsLayer);        
+        
         //Leg de starttegel neer
         StaticTiledMapTile startTile = new StaticTiledMapTile(new TextureRegion(hexagon));
         Cell celly = new Plek(5, 3);
@@ -143,6 +159,22 @@ public class Hexmap {
             System.out.println("Defenses van de geplaatste tegel: " + plek1.defenses);
             drawPile.removeIndex(0);
         }
+    }
+    
+    public void addWall(int x, int y, int direction){
+        Plek plek = (Plek) layer.getCell(x,y);
+        plek.addWall(direction);
+        int wallX = (x - 1) * 3;
+        int wallY = (y - 1) * 2;
+        switch(direction){
+            case 1: wallX += 2; wallY +=2; wallsLayer.getCell(wallX, wallY).setTile(wall1); break;
+            case 2: wallX += 4; wallY +=2; wallsLayer.getCell(wallX, wallY).setTile(wall1); break;          
+            case 3: wallX += 4; wallY +=1; wallsLayer.getCell(wallX, wallY).setTile(wall1); break;
+            case 4: wallX += 2; wallY +=1; wallsLayer.getCell(wallX, wallY).setTile(wall1); break;
+            case 5: wallX += 1; wallY +=1; wallsLayer.getCell(wallX, wallY).setTile(wall1); break;
+            case 6: wallX += 1; wallY +=2; wallsLayer.getCell(wallX, wallY).setTile(wall1); break;
+        }
+        System.out.println("wall positie: " + wallX + " " + wallY);
     }
 
     public void placeOpenTile(int x, int y, StaticTiledMapTile openTile, int tileLocation) {

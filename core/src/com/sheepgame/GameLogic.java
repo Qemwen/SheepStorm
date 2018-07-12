@@ -322,7 +322,6 @@ public class GameLogic implements Screen {
             yInTile = (int)(currentTileX % (Math.sqrt(3)*Constants.TILELENGTH)) - higher;
             //in een even kolom is de relatieve hoogte anders
 
-            System.out.println(xInTile + " " + yInTile);
             if (xInTile < .5 * Constants.TILELENGTH){
                 if (yInTile < .5 * Math.sqrt(3) * Constants.TILELENGTH){
                     wallSide = 5;
@@ -342,8 +341,9 @@ public class GameLogic implements Screen {
                     wallSide = 2;
                 }               
             }
-            System.out.println(wallSide);
             
+            System.out.println(wallSide);
+            GAME.gamelogic.hexmap.addWall(currentTileX, currentTileY, wallSide);
             //if mouse hover of klik en sleep over de blokjes
             //if click or release: plaats daar de wall. 
             SideMenu.numberOfWalls --;
