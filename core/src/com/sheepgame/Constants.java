@@ -14,4 +14,5 @@ public class Constants {
     public static int rows = 15;
     public static int columns = 18;
     public static Skin SKIN = new Skin(Gdx.files.internal("shade/skin/uiskin.json"));  
+    public final static int TILELENGTH = 56;
 }

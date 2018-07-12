@@ -106,7 +106,7 @@ public class GameScreen implements Screen {
         int breedte = x;
         int breedtePlek = x / (int) (1.5 * tileLength);
         double hoogte = Constants.GAMEHEIGHT - y;
-        double tileHeight = (tileLength * 1.7321);
+        double tileHeight = (tileLength * Math.sqrt(3));
         boolean evenColumn = false;
 
         //is het een even kolom?

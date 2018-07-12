@@ -146,13 +146,10 @@ public class Hexmap {
     }
 
     public void placeOpenTile(int x, int y, StaticTiledMapTile openTile, int tileLocation) {
-         placeTile(x,y);
-//        checkPlek(x, y);
-//        if (x < breedte && y < hoogte) {
-//            Cell cell1 = new Plek(x, y);
-//            cell1.setTile(openTile);
-//            layer.setCell(x, y, cell1);
-//            Plek plek1 = (Plek) cell1;
+            Cell cell1 = new Plek(x, y);
+            cell1.setTile(openTile);
+            layer.setCell(x, y, cell1);
+            Plek plek1 = (Plek) layer.getCell(x,y);
             if (drawPile.size > 0) {
                 switch (tileLocation) {
                     case 1:

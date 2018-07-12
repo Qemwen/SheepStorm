@@ -300,7 +300,6 @@ public class GameLogic implements Screen {
                 currentTileY = thatTile[1];
                 Plek checkedPlek = (Plek) GAME.gamelogic.hexmap.layer.getCell(currentTileX, currentTileY);
                 if (checkedPlek.getStatus() == "tiled") {
-                    // TODO: geef teze tile een kleurtje
                     GAME.gamelogic.hexmap.effectLayer.getCell(currentTileX, currentTileY).setTile(GAME.gamelogic.hexmap.green);
                     phase = 52;
                 }
@@ -310,11 +309,40 @@ public class GameLogic implements Screen {
     
     private static void chooseSide(){
         if (Gdx.input.justTouched() && Gdx.input.getX() < (Constants.GAMEWIDTH * .75)) {
-            //bepaal de blokjes van currentTile
-            if (currentTileX % 2 == 0) {higher = 50;} 
+            int wallSide = 0;
+            int xInTile;
+            int yInTile;
+            
+//bepaal de blokjes van currentTile
+            if (currentTileX % 2 == 0) {
+                higher = (int)(0.5 * Math.sqrt(3) * Constants.TILELENGTH);
+            } 
             else{higher = 0;}
-            
-            
+            xInTile = Gdx.input.getX() - (currentTileX * (int) (1.5 * Constants.TILELENGTH));
+            yInTile = (int)(currentTileX % (Math.sqrt(3)*Constants.TILELENGTH)) - higher;
+            //in een even kolom is de relatieve hoogte anders
+
+            System.out.println(xInTile + " " + yInTile);
+            if (xInTile < .5 * Constants.TILELENGTH){
+                if (yInTile < .5 * Math.sqrt(3) * Constants.TILELENGTH){
+                    wallSide = 5;
+                } else{
+                    wallSide = 6;
+                }
+            } else if (xInTile < 1.5 * Constants.TILELENGTH){
+                 if (yInTile < .5 * Math.sqrt(3) * Constants.TILELENGTH){
+                    wallSide = 4;
+                } else{
+                    wallSide = 1;
+                }               
+            } else{
+                 if (yInTile < .5 * Math.sqrt(3) * Constants.TILELENGTH){
+                    wallSide = 3;
+                } else{
+                    wallSide = 2;
+                }               
+            }
+            System.out.println(wallSide);
             
             //if mouse hover of klik en sleep over de blokjes
             //if click or release: plaats daar de wall. 
